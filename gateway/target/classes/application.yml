@@ -1,0 +1,23 @@
+server:
+  port: 8080
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: patient_service
+          uri: http://patient-service:8081
+          predicates:
+            - Path=/patient/**
+        - id: diabetes_report_service
+          uri: http://diabetes-reports-service:8082
+          predicates:
+            - Path=/diabetes-report/**
+        - id: history_service
+          uri: http://history-service:8083
+          predicates:
+            - Path=/history/**
+        - id: risk_level_service
+          uri: http://risk-level-service:8084
+          predicates:
+            - Path=/risk-level/**

@@ -1,0 +1,62 @@
+version: '3'
+services:
+  gateway:
+    build: ./gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - patient-service
+
+  patient-service:
+    build: ./patient-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongodb
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/micro_service
+
+  diabetes-reports-service:
+    build: ./diabetes-reports-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - mongodb
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/micro_service
+
+  history-service:
+    build: ./history-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - mongodb
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/micro_service
+
+  risk-level-service:
+    build: ./risk-level-service
+    ports:
+      - "8084:8084"
+    depends_on:
+      - patient-service
+      - history-service
+      - diabetes-reports-service
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/micro_service
+      - PATIENT_SERVICE_URL=http://patient-service:8081
+      - HISTORY_SERVICE_URL=http://history-service:8083
+      - DIABETES_REPORT_SERVICE_URL=http://diabetes-reports-service:8082
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    command: mongod --bind_ip_all
+    volumes:
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    environment:
+      - MONGO_INITDB_DATABASE=micro_service
+
+volumes:
+  mongodb_data:

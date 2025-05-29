@@ -1,0 +1,7 @@
+medilabo\model\History.class
+medilabo\service\RiskLevelService.class
+medilabo\model\DiabetesReport.class
+medilabo\RiskLevelApplication.class
+medilabo\model\Patient.class
+medilabo\config\WebConfig.class
+medilabo\controller\RiskLevelController.class

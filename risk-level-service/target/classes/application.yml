@@ -1,0 +1,14 @@
+server:
+  port: 8084
+  
+patient:
+  service:
+    url: http://patient-service:8081
+
+history:
+  service:
+    url: http://history-service:8083
+
+diabetes-report:
+    service:
+      url: http://diabetes-reports-service:8082

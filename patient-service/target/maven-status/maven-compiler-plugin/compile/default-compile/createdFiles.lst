@@ -1,0 +1,5 @@
+medilabo\PatientApplication.class
+medilabo\controller\PatientController.class
+medilabo\service\PatientService.class
+medilabo\model\Patient.class
+medilabo\repository\PatientRepository.class
