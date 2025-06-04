@@ -1,0 +1,6 @@
+medilabo\model\History.class
+medilabo\model\DiabetesReport.class
+medilabo\FrontApplication.class
+medilabo\controller\HistoryController.class
+medilabo\controller\PatientController.class
+medilabo\model\Patient.class

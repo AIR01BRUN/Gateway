@@ -58,17 +58,23 @@ db.history.insertMany([
 db.diabetes_reports.insertMany([
   {
     _id: "1",
-    id_patient: "1",
     risk: "Borderline"
   },
   {
     _id: "2",
-    id_patient: "2",
     risk: "In Danger"
   },
   {
     _id: "3",
-    id_patient: "3",
     risk: "Early Onset"
   }
 ]);
+
+// User Accounts
+db.user_accounts.insertMany([
+  {
+    _id: "1",
+    username: "admin",
+    password: "admin",
+    role: "admin"
+  }]);

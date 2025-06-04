@@ -21,3 +21,7 @@ spring:
           uri: http://risk-level-service:8084
           predicates:
             - Path=/risk-level/**
+        - id: front_service
+          uri: http://front:8089
+          predicates:
+            - Path=/**

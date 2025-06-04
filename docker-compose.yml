@@ -16,6 +16,12 @@ services:
     environment:
       - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/micro_service
 
+  front:
+    build: ./front
+    ports:
+      - "8089:8089"
+    
+
   diabetes-reports-service:
     build: ./diabetes-reports-service
     ports:

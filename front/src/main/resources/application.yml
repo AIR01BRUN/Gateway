@@ -1,0 +1,14 @@
+server:
+  port: 8089
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.boot: DEBUG
+
+gateway:
+    url: http://gateway:8080
+
+
+
+
