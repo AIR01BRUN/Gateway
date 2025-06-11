@@ -3,4 +3,6 @@ medilabo\model\DiabetesReport.class
 medilabo\FrontApplication.class
 medilabo\controller\HistoryController.class
 medilabo\controller\PatientController.class
+medilabo\controller\HomeController.class
+medilabo\model\User.class
 medilabo\model\Patient.class

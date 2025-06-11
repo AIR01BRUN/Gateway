@@ -21,8 +21,12 @@ public class HistoryService {
 
     }
 
-    public History getByIdPatient(String id) {
-        return historyRepository.findByIdPatient(id).orElse(null);
+    public List<History> getByIdPatient(String idPatient) {
+        return historyRepository.findByIdPatient(idPatient).orElse(null);
+    }
+
+    public History getById(String id) {
+        return historyRepository.findById(id).orElse(null);
     }
 
     public List<History> getAll() {
@@ -30,11 +34,10 @@ public class HistoryService {
     }
 
     public boolean addHistory(History history) {
-        if (historyRepository.existsById(history.getId())) {
-            historyRepository.save(history);
-            return true;
-        }
-        return false;
+
+        historyRepository.save(history);
+        return true;
+
     }
 
     public boolean updateHistory(History history) {

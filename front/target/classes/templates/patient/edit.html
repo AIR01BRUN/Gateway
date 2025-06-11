@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Patient</title>
+    <!-- Reuse the same CSS as in add.html -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .error {
+            color: red;
+            margin-bottom: 15px;
+        }
+        .navbar {
+            background-color: #f2f2f2;
+            padding: 10px 20px;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        .navbar a {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 0 5px;
+            color: white;
+            background-color: #4CAF50;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .navbar a:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{home :: navbar}"></div>
+
+    <div class="form-container">
+        <h2>Edit Patient</h2>
+        <div th:if="${error}" class="error" th:text="${error}"></div>
+        <form th:action="@{/p/edit}" method="post">
+            <input type="hidden" id="id" name="id" th:value="${patient.id}" />
+            <div class="form-group">
+                <label for="firstName">First Name:</label>
+                <input type="text" id="firstName" name="firstName" th:value="${patient.firstName}" required />
+            </div>
+            <div class="form-group">
+                <label for="lastName">Last Name:</label>
+                <input type="text" id="lastName" name="lastName" th:value="${patient.lastName}" required />
+            </div>
+            <div class="form-group">
+                <label for="birthDate">Birth Date:</label>
+                <input type="text" id="birthDate" name="birthDate" th:value="${patient.birthDate}" required />
+            </div>
+            <div class="form-group">
+                <label for="gender">Gender:</label>
+                <select id="gender" name="gender" required>
+                    <option value="" disabled>Select gender</option>
+                    <option value="M" th:selected="${patient.gender == 'M'}">Male</option>
+                    <option value="F" th:selected="${patient.gender == 'F'}">Female</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="address">Address:</label>
+                <input type="text" id="address" name="address" th:value="${patient.address}" />
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone:</label>
+                <input type="tel" id="phone" name="phone" th:value="${patient.phone}" />
+            </div>
+
+            <button type="submit">Update Patient</button>
+        </form>
+    </div>
+</body>
+</html>

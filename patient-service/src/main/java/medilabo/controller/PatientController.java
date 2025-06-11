@@ -2,8 +2,10 @@ package medilabo.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import medilabo.model.Patient;
 import medilabo.service.PatientService;
 
@@ -29,26 +31,27 @@ public class PatientController {
     }
 
     @PostMapping("/add")
-    public String addPatient(@RequestBody Patient patient) {
+    public ResponseEntity<Patient> addPatient(@Valid @RequestBody Patient patient) {
+
         patientService.addPatient(patient);
-        return "added";
+        return ResponseEntity.ok(patient);
     }
 
     @PutMapping("/update")
-    public String updatePatient(@RequestBody Patient patient) {
+    public ResponseEntity<Patient> updatePatient(@Valid @RequestBody Patient patient) {
         if (patientService.updatePatient(patient)) {
-            return "updated";
+            return ResponseEntity.ok(patient);
         }
-        return "NOT updated";
+        return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/delete/{id}")
-    public String deletePatient(@PathVariable String id) {
+    public ResponseEntity<String> deletePatient(@PathVariable String id) {
         if (patientService.deletePatient(id)) {
-            return "deleted";
+            return ResponseEntity.ok(id + " deleted successfully.");
         }
 
-        return "Not deleted";
+        return ResponseEntity.notFound().build();
     }
 
     @GetMapping("/ping")

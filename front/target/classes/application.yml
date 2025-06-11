@@ -8,6 +8,18 @@ logging:
 
 gateway:
     url: http://gateway:8080
+    url-local: http://localhost:8080
+
+patient:
+  url: http://patient-service:8081
+  url-local: http://localhost:8081
+history:
+  url: http://history-service:8083
+  url-local: http://localhost:8083
+
+risk:
+  url: http://risk-level-service:8084
+  url-local: http://localhost:8084
 
 
 

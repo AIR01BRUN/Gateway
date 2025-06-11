@@ -19,6 +19,8 @@ public class History {
     @Field("note")
     private String note;
 
+    private String riskLevel;
+
     public History() {
     }
 
@@ -27,6 +29,7 @@ public class History {
         this.idPatient = idPatient;
         this.namePatient = namePatient;
         this.note = note;
+        this.riskLevel = "unknown"; // Default risk level
     }
 
     public String getId() {
@@ -59,6 +62,14 @@ public class History {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public String getRiskLevel() {
+        return riskLevel;
+    }
+
+    public void setRiskLevel(String riskLevel) {
+        this.riskLevel = riskLevel;
     }
 
 }

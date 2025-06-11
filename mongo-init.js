@@ -38,19 +38,36 @@ db.history.insertMany([
     _id: "1",
     id_patient: "1",
     name_patient: "Jean Borderline",
-    note: "Hémoglobine A1C, Microalbumine, Taille, Poids" // 4 triggers - Borderline
+    note: "Hémoglobine A1C, Microalbumine, Taille, Poids", // 4 triggers - Borderline
+     riskLevel: "" 
   },
   {
     _id: "2",
     id_patient: "2",
     name_patient: "Marie Danger",
-    note: "Hémoglobine A1C, Microalbumine, Taille, Poids, Fumeuse, Cholestérol" // 6 triggers - In Danger
+    note: "Hémoglobine A1C, Microalbumine, Taille, Poids, Fumeuse, Cholestérol", // 6 triggers - In Danger
+     riskLevel: "" 
   },
   {
     _id: "3",
     id_patient: "3",
     name_patient: "Paul Early",
-    note: "Hémoglobine A1C, Microalbumine, Taille, Poids, Fumeur, Cholestérol, Vertiges, Rechute" // 8 triggers - Early Onset
+    note: "Hémoglobine A1C, Microalbumine, Taille, Poids, Fumeur, Cholestérol, Vertiges, Rechute", // 8 triggers - Early Onset
+     riskLevel: "" 
+  },
+  {
+    _id: "4",
+    id_patient: "3",
+    name_patient: "Paul Early",
+    note: "Hémoglobine A1C, Microalbumine, Taille, Poids, Fumeuse, Cholestérol", // 6 triggers - In Danger
+    riskLevel: "" 
+  },
+  {
+    _id: "5",
+    id_patient: "3",
+    name_patient: "Paul Early",
+    note: "Hémoglobine A1C, Microalbumine, Taille, Poids, Fumeur, Cholestérol, Vertiges, Rechute",// 8 triggers - Early Onset
+    riskLevel: "" 
   }
 ]);
 
@@ -73,8 +90,9 @@ db.diabetes_reports.insertMany([
 // User Accounts
 db.user_accounts.insertMany([
   {
-    _id: "1",
+    _id: ObjectId("666111111111111111111111"),
     username: "admin",
-    password: "admin",
-    role: "admin"
-  }]);
+    password: "$2a$10$7FqHjvmjLpsNkG/AeRkLkOcIUzEW9bVdrPxHJqgP9hbf8xH.vyENq", // "admin" encodé en BCrypt
+    roles: ["admin"]
+  }
+])

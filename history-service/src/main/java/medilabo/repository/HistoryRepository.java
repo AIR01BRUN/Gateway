@@ -13,5 +13,5 @@ public interface HistoryRepository extends MongoRepository<History, String> {
 
     Optional<List<History>> findByNamePatient(String namePatient);
 
-    Optional<History> findByIdPatient(String idPatient);
+    Optional<List<History>> findByIdPatient(String idPatient);
 }

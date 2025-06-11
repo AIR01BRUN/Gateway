@@ -13,14 +13,8 @@ public class RiskLevelService {
 
     private final RestTemplate restTemplate;
 
-    @Value("${patient.service.url}")
-    private String patientServiceUrl;
-
-    @Value("${history.service.url}")
-    private String historyServiceUrl;
-
-    @Value("${diabetes-report.service.url}")
-    private String diabetesReportServiceUrl;
+    @Value("${patient.url}")
+    private String patientUrl;
 
     private final String[] diabetesReportFields = {
             "Hémoglobine A1C",
@@ -55,14 +49,9 @@ public class RiskLevelService {
         return count;
     }
 
-    public String decideRiskLevel(String idPatient) {
-        Patient patient = restTemplate.getForObject(patientServiceUrl + "/patient/" + idPatient,
+    public History decideRiskLevel(History history) {
+        Patient patient = restTemplate.getForObject(patientUrl + "/patient/" + history.getIdPatient(),
                 Patient.class);
-        History history = restTemplate.getForObject(historyServiceUrl + "/history/" + idPatient,
-                History.class);
-        if (patient == null || history == null) {
-            return "Patient or history not found";
-        }
 
         int age = calculateAge(patient.getBirthDate());
 
@@ -79,15 +68,8 @@ public class RiskLevelService {
             riskLevel = "Early Onset";
         }
 
-        return riskLevel;
-    }
-
-    public void assignRiskLevel(DiabetesReport diabetesReport) {
-        String riskLevel = decideRiskLevel(diabetesReport.getId());
-        diabetesReport.setRisk(riskLevel);
-
-        restTemplate.put(diabetesReportServiceUrl + "/reports/update",
-                diabetesReport, DiabetesReport.class);
+        history.setRiskLevel(riskLevel);
+        return history;
     }
 
     public int calculateAge(String dateOfBirth) {

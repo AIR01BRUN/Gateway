@@ -20,7 +20,8 @@ services:
     build: ./front
     ports:
       - "8089:8089"
-    
+  
+
 
   diabetes-reports-service:
     build: ./diabetes-reports-service

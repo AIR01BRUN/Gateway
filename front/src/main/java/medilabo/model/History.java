@@ -4,20 +4,23 @@ public class History {
 
     private String id;
 
-    private int idPatient;
+    private String idPatient;
 
     private String namePatient;
 
     private String note;
 
+    private String riskLevel;
+
     public History() {
     }
 
-    public History(String id, int idPatient, String namePatient, String note) {
+    public History(String id, String idPatient, String namePatient, String note) {
         this.id = id;
         this.idPatient = idPatient;
         this.namePatient = namePatient;
         this.note = note;
+        this.riskLevel = "unknown"; // Default risk level
     }
 
     public String getId() {
@@ -28,11 +31,11 @@ public class History {
         this.id = id;
     }
 
-    public int getIdPatient() {
+    public String getIdPatient() {
         return idPatient;
     }
 
-    public void setIdPatient(int idPatient) {
+    public void setIdPatient(String idPatient) {
         this.idPatient = idPatient;
     }
 
@@ -50,6 +53,14 @@ public class History {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public String getRiskLevel() {
+        return riskLevel;
+    }
+
+    public void setRiskLevel(String riskLevel) {
+        this.riskLevel = riskLevel;
     }
 
 }
