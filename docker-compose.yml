@@ -20,17 +20,7 @@ services:
     build: ./front
     ports:
       - "8089:8089"
-  
 
-
-  diabetes-reports-service:
-    build: ./diabetes-reports-service
-    ports:
-      - "8082:8082"
-    depends_on:
-      - mongodb
-    environment:
-      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/micro_service
 
   history-service:
     build: ./history-service
@@ -48,12 +38,11 @@ services:
     depends_on:
       - patient-service
       - history-service
-      - diabetes-reports-service
     environment:
       - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/micro_service
       - PATIENT_SERVICE_URL=http://patient-service:8081
       - HISTORY_SERVICE_URL=http://history-service:8083
-      - DIABETES_REPORT_SERVICE_URL=http://diabetes-reports-service:8082
+
 
   mongodb:
     image: mongo:latest

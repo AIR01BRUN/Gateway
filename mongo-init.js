@@ -71,21 +71,7 @@ db.history.insertMany([
   }
 ]);
 
-// Diabetes Reports
-db.diabetes_reports.insertMany([
-  {
-    _id: "1",
-    risk: "Borderline"
-  },
-  {
-    _id: "2",
-    risk: "In Danger"
-  },
-  {
-    _id: "3",
-    risk: "Early Onset"
-  }
-]);
+
 
 // User Accounts
 db.user_accounts.insertMany([

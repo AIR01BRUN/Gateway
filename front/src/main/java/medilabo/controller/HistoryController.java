@@ -32,6 +32,9 @@ public class HistoryController {
     @Value("${risk.url}")
     private String riskUrl;
 
+    @Value("${patient.url}")
+    private String patientUrl;
+
     public HistoryController() {
 
     }
@@ -50,7 +53,7 @@ public class HistoryController {
     public String add(@PathVariable("idPatient") String idPatient, Model model) {
         RestTemplate restTemplate = new RestTemplate();
         model.addAttribute("gatewayUrl", gatewayUrl);
-        Patient patient = restTemplate.getForObject(historyUrl + "/patient/" + idPatient, Patient.class);
+        Patient patient = restTemplate.getForObject(patientUrl + "/patient/" + idPatient, Patient.class);
         History history = new History();
         history.setIdPatient(idPatient);
         history.setNamePatient(patient.getFirstName() + " " + patient.getLastName());
@@ -68,7 +71,7 @@ public class HistoryController {
         int size = listHistories.size() + 1;
         history.setId("" + size);
 
-        restTemplate.postForObject(gatewayUrl + "/history/add", history, History.class);
+        restTemplate.postForObject(historyUrl + "/history/add", history, History.class);
 
         String redirection = "redirect:" + gatewayUrlLocal + "/h/list/" + history.getIdPatient();
         return redirection; // Redirect to the patient list after submission

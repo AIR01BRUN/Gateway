@@ -1,6 +1,0 @@
-com\example\repository\UserRepository.class
-com\example\PingController.class
-com\example\PingApplication.class
-com\example\config\SecurityConfig.class
-com\example\model\User.class
-com\example\service\CustomReactiveUserDetailsService.class
