@@ -19,11 +19,9 @@ public class RiskLevelController {
 
     @Value("${gateway.url}")
     private String gatewayUrl;
-    private RestTemplate restTemplate;
 
-    public RiskLevelController(RiskLevelService riskLevelService, RestTemplate restTemplate) {
+    public RiskLevelController(RiskLevelService riskLevelService) {
         this.riskLevelService = riskLevelService;
-        this.restTemplate = restTemplate;
     }
 
     @PostMapping("/decide")

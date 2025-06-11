@@ -37,6 +37,7 @@ public class HistoryController {
         this.restTemplate = restTemplate;
     }
 
+    // Centralise la récupération du token dans les headers
     private HttpHeaders HeaderEntity(HttpServletRequest request) {
         String token = request.getHeader("X-Gateway-Token");
         HttpHeaders headers = new HttpHeaders();
@@ -44,6 +45,7 @@ public class HistoryController {
         return headers;
     }
 
+    // LIST
     @GetMapping("/list/{idPatient}")
     public String list(@PathVariable("idPatient") String idPatient, HttpServletRequest request, Model model) {
         ResponseEntity<List<History>> response = restTemplate.exchange(
@@ -57,6 +59,7 @@ public class HistoryController {
         return "history/list";
     }
 
+    // ADD - formulaire
     @GetMapping("/add/{idPatient}")
     public String add(@PathVariable("idPatient") String idPatient, HttpServletRequest request, Model model) {
         model.addAttribute("gatewayUrl", gatewayUrl);
@@ -76,6 +79,7 @@ public class HistoryController {
         return "history/add";
     }
 
+    // ADD - soumission
     @PostMapping("/add")
     public String addSubmit(History history, HttpServletRequest request) {
         ResponseEntity<List<History>> response = restTemplate.exchange(
@@ -98,6 +102,7 @@ public class HistoryController {
         return "redirect:" + gatewayUrlLocal + "/h/list/" + history.getIdPatient();
     }
 
+    // EDIT - formulaire
     @GetMapping("/edit/{id}")
     public String edit(@PathVariable("id") String id, HttpServletRequest request, Model model) {
         ResponseEntity<History> response = restTemplate.exchange(
@@ -111,6 +116,7 @@ public class HistoryController {
         return "history/edit";
     }
 
+    // EDIT - soumission
     @PostMapping("/edit")
     public String editSubmit(History history, HttpServletRequest request) {
         HttpEntity<History> entity = new HttpEntity<>(history, HeaderEntity(request));
@@ -124,6 +130,7 @@ public class HistoryController {
         return "redirect:" + gatewayUrlLocal + "/h/list/" + history.getIdPatient();
     }
 
+    // DELETE
     @GetMapping("/delete/{id}")
     public String deleteSubmit(@PathVariable("id") String id, HttpServletRequest request) {
         restTemplate.exchange(
@@ -134,6 +141,7 @@ public class HistoryController {
         return "redirect:" + gatewayUrlLocal + "/p/list/";
     }
 
+    // ASSIGN Risk Level
     @GetMapping("/risk-level/{idNote}")
     public String riskLevel(@PathVariable("idNote") String idNote, HttpServletRequest request) {
         ResponseEntity<History> historyResponse = restTemplate.exchange(

@@ -15,6 +15,7 @@ public class RiskLevelService {
     @Value("${gateway.url}")
     private String gatewayUrl;
 
+    // Liste des termes à détecter dans les notes pour évaluer le risque diabète
     private final String[] diabetesReportFields = {
             "Hémoglobine A1C",
             "Microalbumine", "Taille",
@@ -28,27 +29,9 @@ public class RiskLevelService {
         this.restTemplate = restTemplate;
     }
 
-    public int countTrigger(String note) {
-        if (note == null || note.trim().isEmpty()) {
-            return 0;
-        }
-
-        String normalizedNote = note.toLowerCase();
-        int count = 0;
-
-        for (String field : diabetesReportFields) {
-            String normalizedField = field.toLowerCase();
-            String wordPattern = "\\b" + normalizedField + "\\b";
-            if (normalizedNote.matches(".*" + wordPattern + ".*")) {
-                count++;
-
-            }
-        }
-
-        return count;
-    }
-
+    // Calcule le niveau de risque d'un patient à partir de son historique
     public String decideRiskLevel(History history) {
+        // Récupère les infos patient via son ID
         Patient patient = restTemplate.getForObject(gatewayUrl + "/patient/" + history.getIdPatient(),
                 Patient.class);
 
@@ -56,7 +39,8 @@ public class RiskLevelService {
 
         int countTrigger = countTrigger(history.getNote());
 
-        String riskLevel = "None";
+        String riskLevel = "None"; // Valeur par défaut
+
         if (isBorderline(countTrigger, age)) {
             riskLevel = "Borderline";
         }
@@ -70,6 +54,28 @@ public class RiskLevelService {
         return riskLevel;
     }
 
+    // Compte combien de termes déclencheurs sont présents dans la note
+    public int countTrigger(String note) {
+        if (note == null || note.trim().isEmpty()) {
+            return 0;
+        }
+
+        String normalizedNote = note.toLowerCase();
+        int count = 0;
+
+        // Recherche chaque terme déclencheur dans la note (mot entier)
+        for (String field : diabetesReportFields) {
+            String normalizedField = field.toLowerCase();
+            String wordPattern = "\\b" + normalizedField + "\\b";
+            if (normalizedNote.matches(".*" + wordPattern + ".*")) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    // Calcule l'âge à partir de la date de naissance (format dd/MM/yyyy)
     public int calculateAge(String dateOfBirth) {
         String[] parts = dateOfBirth.split("/");
         int year = Integer.parseInt(parts[2]);
@@ -77,16 +83,19 @@ public class RiskLevelService {
         int day = Integer.parseInt(parts[0]);
 
         int age = 2023 - year;
+        // Ajuste si la date d'anniversaire n'est pas encore passée cette année
         if (month > 10 || (month == 10 && day > 10)) {
             age--;
         }
         return age;
     }
 
+    // Vérifie si le patient est borderline (risque moyen)
     public boolean isBorderline(int countTrigger, int age) {
         return countTrigger > 2 && countTrigger <= 5 && age > 30;
     }
 
+    // Vérifie si le patient est en danger (risque élevé)
     public boolean isInDanger(String sexe, int age, int countTrigger) {
         if (sexe.equals("H") && countTrigger >= 3 && age <= 30) {
             return true;
@@ -98,6 +107,7 @@ public class RiskLevelService {
         return false;
     }
 
+    // Vérifie si le patient a un début précoce (Early Onset)
     public boolean isEarlyOnset(String sexe, int age, int countTrigger) {
         if (sexe.equals("H") && countTrigger >= 5 && age <= 30) {
             return true;

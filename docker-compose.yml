@@ -20,7 +20,7 @@ services:
     build: ./front
     ports:
       - "8089:8089"
-
+    
 
   history-service:
     build: ./history-service
@@ -35,14 +35,6 @@ services:
     build: ./risk-level-service
     ports:
       - "8084:8084"
-    depends_on:
-      - patient-service
-      - history-service
-    environment:
-      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/micro_service
-      - PATIENT_SERVICE_URL=http://patient-service:8081
-      - HISTORY_SERVICE_URL=http://history-service:8083
-
 
   mongodb:
     image: mongo:latest

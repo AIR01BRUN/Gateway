@@ -73,12 +73,3 @@ db.history.insertMany([
 
 
 
-// User Accounts
-db.user_accounts.insertMany([
-  {
-    _id: ObjectId("666111111111111111111111"),
-    username: "admin",
-    password: "$2a$10$7FqHjvmjLpsNkG/AeRkLkOcIUzEW9bVdrPxHJqgP9hbf8xH.vyENq", // "admin" encodé en BCrypt
-    roles: ["admin"]
-  }
-])
