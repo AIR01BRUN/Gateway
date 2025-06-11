@@ -3,6 +3,10 @@ medilabo\model\DiabetesReport.class
 medilabo\FrontApplication.class
 medilabo\controller\HistoryController.class
 medilabo\controller\PatientController.class
+medilabo\controller\HistoryController$1.class
 medilabo\controller\HomeController.class
+medilabo\controller\HistoryController$2.class
+medilabo\config\RestTemplateConfig.class
 medilabo\model\User.class
 medilabo\model\Patient.class
+medilabo\controller\PatientController$1.class

@@ -1,5 +1,6 @@
+medilabo\service\PatientService.class
 medilabo\PatientApplication.class
 medilabo\controller\PatientController.class
-medilabo\service\PatientService.class
+medilabo\component\GatewayTokenFilter.class
 medilabo\model\Patient.class
 medilabo\repository\PatientRepository.class

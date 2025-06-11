@@ -2,9 +2,14 @@ package medilabo.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestTemplate;
 
-import medilabo.model.History;
 import medilabo.model.Patient;
 
 @Controller
@@ -26,61 +30,85 @@ public class PatientController {
     @Value("${gateway.url-local}")
     private String gatewayUrlLocal;
 
-    @Value("${patient.url}")
-    private String patientUrl;
+    private RestTemplate restTemplate;
 
-    public PatientController() {
-
+    public PatientController(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
     }
 
+    // Centralise la récupération du token dans les headers
+    private HttpHeaders HeaderEntity(HttpServletRequest request) {
+        String token = request.getHeader("X-Gateway-Token");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-Gateway-Token", token);
+        return headers;
+    }
+
+    // LIST
     @GetMapping("/list")
-    public String list(Model model) {
-        RestTemplate restTemplate = new RestTemplate();
-        List<Patient> listPatients = restTemplate.getForObject(patientUrl + "/patient/all", List.class);
-        model.addAttribute("patients", listPatients);
-        return "patient/list"; // Returns the name of the view to be rendered
+    public String list(HttpServletRequest request, Model model) {
+        ResponseEntity<List<Patient>> response = restTemplate.exchange(
+                gatewayUrl + "/patient/all",
+                HttpMethod.GET,
+                new HttpEntity<>(HeaderEntity(request)),
+                new ParameterizedTypeReference<List<Patient>>() {
+                });
+        model.addAttribute("patients", response.getBody());
+        return "patient/list";
     }
 
+    // ADD - formulaire
     @GetMapping("/add")
-    public String add(Model model) {
-        model.addAttribute("gatewayUrl", patientUrl);
+    public String add(HttpServletRequest request, Model model) {
+        model.addAttribute("gatewayUrl", gatewayUrl);
         return "patient/add";
     }
 
+    // ADD - soumission
     @PostMapping("/add")
-    public String addSubmit(Patient patient) {
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.postForObject(patientUrl + "/patient/add", patient, Patient.class);
+    public String addSubmit(HttpServletRequest request, Patient patient) {
+        HttpEntity<Patient> entity = new HttpEntity<>(patient, HeaderEntity(request));
+        restTemplate.exchange(
+                gatewayUrl + "/patient/add",
+                HttpMethod.POST,
+                entity,
+                Patient.class);
         return "redirect:" + gatewayUrlLocal + "/p/list";
     }
 
+    // EDIT - formulaire
     @GetMapping("/edit/{id}")
-    public String edit(@PathVariable("id") String id, Model model) {
-        // Fetch patient data from the API
-        RestTemplate restTemplate = new RestTemplate();
-        Patient patient = restTemplate.getForObject(patientUrl + "/patient/" + id, Patient.class);
-
-        model.addAttribute("patient", patient);
+    public String edit(@PathVariable("id") String id, HttpServletRequest request, Model model) {
+        ResponseEntity<Patient> response = restTemplate.exchange(
+                gatewayUrl + "/patient/" + id,
+                HttpMethod.GET,
+                new HttpEntity<>(HeaderEntity(request)),
+                Patient.class);
+        model.addAttribute("patient", response.getBody());
         model.addAttribute("gatewayUrl", gatewayUrl);
-        return "patient/edit"; // Returns the edit view
+        return "patient/edit";
     }
 
+    // EDIT - soumission
     @PostMapping("/edit")
-    public String editSubmit(Patient patient) {
-        // Use HttpEntity to send the patient object in a PUT request
-        RestTemplate restTemplate = new RestTemplate();
-        HttpEntity<Patient> request = new HttpEntity<>(patient);
-        restTemplate.exchange(patientUrl + "/patient/update", HttpMethod.PUT, request, Patient.class);
+    public String editSubmit(HttpServletRequest request, Patient patient) {
+        HttpEntity<Patient> entity = new HttpEntity<>(patient, HeaderEntity(request));
+        restTemplate.exchange(
+                gatewayUrl + "/patient/update",
+                HttpMethod.PUT,
+                entity,
+                Patient.class);
         return "redirect:" + gatewayUrlLocal + "/p/list";
     }
 
+    // DELETE
     @GetMapping("/delete/{id}")
-    public String deleteSubmit(@PathVariable("id") String id) {
-        RestTemplate restTemplate = new RestTemplate();
-
-        restTemplate.delete(patientUrl + "/patient/delete/" + id);
-        return "redirect:" + gatewayUrlLocal + "/p/list"; // Redirect to the patient list
-                                                          // after submission
+    public String deleteSubmit(@PathVariable("id") String id, HttpServletRequest request) {
+        restTemplate.exchange(
+                gatewayUrl + "/patient/delete/" + id,
+                HttpMethod.DELETE,
+                new HttpEntity<>(HeaderEntity(request)),
+                Void.class);
+        return "redirect:" + gatewayUrlLocal + "/p/list";
     }
-
 }

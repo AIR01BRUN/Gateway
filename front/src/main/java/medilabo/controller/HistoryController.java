@@ -2,9 +2,14 @@ package medilabo.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,94 +31,136 @@ public class HistoryController {
     @Value("${gateway.url-local}")
     private String gatewayUrlLocal;
 
-    @Value("${history.url}")
-    private String historyUrl;
+    private RestTemplate restTemplate;
 
-    @Value("${risk.url}")
-    private String riskUrl;
+    public HistoryController(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
-    @Value("${patient.url}")
-    private String patientUrl;
-
-    public HistoryController() {
-
+    private HttpHeaders HeaderEntity(HttpServletRequest request) {
+        String token = request.getHeader("X-Gateway-Token");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-Gateway-Token", token);
+        return headers;
     }
 
     @GetMapping("/list/{idPatient}")
-    public String list(@PathVariable("idPatient") String idPatient, Model model) {
-        RestTemplate restTemplate = new RestTemplate();
-        List<History> listHistories = restTemplate.getForObject(historyUrl + "/history/byIdPatient/" + idPatient,
-                List.class);
-        model.addAttribute("histories", listHistories);
+    public String list(@PathVariable("idPatient") String idPatient, HttpServletRequest request, Model model) {
+        ResponseEntity<List<History>> response = restTemplate.exchange(
+                gatewayUrl + "/history/byIdPatient/" + idPatient,
+                HttpMethod.GET,
+                new HttpEntity<>(HeaderEntity(request)),
+                new ParameterizedTypeReference<List<History>>() {
+                });
+        model.addAttribute("histories", response.getBody());
         model.addAttribute("idPatient", idPatient);
-        return "history/list"; // Returns the name of the view to be rendered
+        return "history/list";
     }
 
     @GetMapping("/add/{idPatient}")
-    public String add(@PathVariable("idPatient") String idPatient, Model model) {
-        RestTemplate restTemplate = new RestTemplate();
+    public String add(@PathVariable("idPatient") String idPatient, HttpServletRequest request, Model model) {
         model.addAttribute("gatewayUrl", gatewayUrl);
-        Patient patient = restTemplate.getForObject(patientUrl + "/patient/" + idPatient, Patient.class);
+
+        ResponseEntity<Patient> patientResponse = restTemplate.exchange(
+                gatewayUrl + "/patient/" + idPatient,
+                HttpMethod.GET,
+                new HttpEntity<>(HeaderEntity(request)),
+                Patient.class);
+
+        Patient patient = patientResponse.getBody();
         History history = new History();
         history.setIdPatient(idPatient);
         history.setNamePatient(patient.getFirstName() + " " + patient.getLastName());
 
         model.addAttribute("history", history);
-
-        // Initialize a new History object
         return "history/add";
     }
 
     @PostMapping("/add")
-    public String addSubmit(History history) {
-        RestTemplate restTemplate = new RestTemplate();
-        List<History> listHistories = restTemplate.getForObject(historyUrl + "/history/all", List.class);
-        int size = listHistories.size() + 1;
+    public String addSubmit(History history, HttpServletRequest request) {
+        ResponseEntity<List<History>> response = restTemplate.exchange(
+                gatewayUrl + "/history/all",
+                HttpMethod.GET,
+                new HttpEntity<>(HeaderEntity(request)),
+                new ParameterizedTypeReference<List<History>>() {
+                });
+        int size = response.getBody().size() + 1;
         history.setId("" + size);
 
-        restTemplate.postForObject(historyUrl + "/history/add", history, History.class);
+        HttpEntity<History> entity = new HttpEntity<>(history, HeaderEntity(request));
 
-        String redirection = "redirect:" + gatewayUrlLocal + "/h/list/" + history.getIdPatient();
-        return redirection; // Redirect to the patient list after submission
+        restTemplate.exchange(
+                gatewayUrl + "/history/add",
+                HttpMethod.POST,
+                entity,
+                History.class);
+
+        return "redirect:" + gatewayUrlLocal + "/h/list/" + history.getIdPatient();
     }
 
     @GetMapping("/edit/{id}")
-    public String edit(@PathVariable("id") String id, Model model) {
-        // Fetch patient data from the API
-        RestTemplate restTemplate = new RestTemplate();
-        History history = restTemplate.getForObject(historyUrl + "/history/" + id, History.class);
+    public String edit(@PathVariable("id") String id, HttpServletRequest request, Model model) {
+        ResponseEntity<History> response = restTemplate.exchange(
+                gatewayUrl + "/history/" + id,
+                HttpMethod.GET,
+                new HttpEntity<>(HeaderEntity(request)),
+                History.class);
 
-        model.addAttribute("history", history);
+        model.addAttribute("history", response.getBody());
         model.addAttribute("gatewayUrl", gatewayUrl);
-        return "history/edit"; // Returns the edit view
+        return "history/edit";
     }
 
     @PostMapping("/edit")
-    public String editSubmit(History history) {
-        // Use HttpEntity to send the patient object in a PUT request
-        RestTemplate restTemplate = new RestTemplate();
-        HttpEntity<History> request = new HttpEntity<>(history);
-        restTemplate.exchange(historyUrl + "/history/update", HttpMethod.PUT, request, History.class);
-        String redirection = "redirect:" + gatewayUrlLocal + "/h/list/" + history.getIdPatient();
-        return redirection;
+    public String editSubmit(History history, HttpServletRequest request) {
+        HttpEntity<History> entity = new HttpEntity<>(history, HeaderEntity(request));
+
+        restTemplate.exchange(
+                gatewayUrl + "/history/update",
+                HttpMethod.PUT,
+                entity,
+                History.class);
+
+        return "redirect:" + gatewayUrlLocal + "/h/list/" + history.getIdPatient();
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteSubmit(@PathVariable("id") String id) {
-        RestTemplate restTemplate = new RestTemplate();
-
-        restTemplate.delete(historyUrl + "/history/delete/" + id);
-        String redirection = "redirect:" + gatewayUrlLocal + "/p/list/";
-        return redirection;
+    public String deleteSubmit(@PathVariable("id") String id, HttpServletRequest request) {
+        restTemplate.exchange(
+                gatewayUrl + "/history/delete/" + id,
+                HttpMethod.DELETE,
+                new HttpEntity<>(HeaderEntity(request)),
+                Void.class);
+        return "redirect:" + gatewayUrlLocal + "/p/list/";
     }
 
     @GetMapping("/risk-level/{idNote}")
-    public String riskLevel(@PathVariable("idNote") String idNote, Model model) {
-        RestTemplate restTemplate = new RestTemplate();
-        History history = restTemplate.getForObject(historyUrl + "/history/" + idNote, History.class);
-        restTemplate.postForObject(riskUrl + "/risk-level/decide", history, History.class);
-        String redirection = "redirect:" + gatewayUrlLocal + "/h/list/" + history.getIdPatient();
-        return redirection;
-    }
+    public String riskLevel(@PathVariable("idNote") String idNote, HttpServletRequest request) {
+        ResponseEntity<History> historyResponse = restTemplate.exchange(
+                gatewayUrl + "/history/" + idNote,
+                HttpMethod.GET,
+                new HttpEntity<>(HeaderEntity(request)),
+                History.class);
 
+        History history = historyResponse.getBody();
+
+        HttpEntity<History> entity = new HttpEntity<>(history, HeaderEntity(request));
+
+        ResponseEntity<String> riskResponse = restTemplate.exchange(
+                gatewayUrl + "/risk-level/decide",
+                HttpMethod.POST,
+                entity,
+                String.class);
+
+        history.setRiskLevel(riskResponse.getBody());
+
+        HttpEntity<History> updateEntity = new HttpEntity<>(history, HeaderEntity(request));
+        restTemplate.exchange(
+                gatewayUrl + "/history/update",
+                HttpMethod.PUT,
+                updateEntity,
+                History.class);
+
+        return "redirect:" + gatewayUrlLocal + "/h/list/" + history.getIdPatient();
+    }
 }

@@ -17,19 +17,19 @@ public class RiskLevelController {
 
     private final RiskLevelService riskLevelService;
 
-    @Value("${history.url}")
-    private String historyUrl;
+    @Value("${gateway.url}")
+    private String gatewayUrl;
+    private RestTemplate restTemplate;
 
-    public RiskLevelController(RiskLevelService riskLevelService) {
+    public RiskLevelController(RiskLevelService riskLevelService, RestTemplate restTemplate) {
         this.riskLevelService = riskLevelService;
+        this.restTemplate = restTemplate;
     }
 
     @PostMapping("/decide")
-    public ResponseEntity<History> decideRiskLevel(@RequestBody History history) {
+    public ResponseEntity<String> decideRiskLevel(@RequestBody History history) {
 
-        RestTemplate restTemplate = new RestTemplate();
-        HttpEntity<History> request = new HttpEntity<>(riskLevelService.decideRiskLevel(history));
-        restTemplate.exchange(historyUrl + "/history/update", HttpMethod.PUT, request, History.class);
-        return ResponseEntity.ok(history);
+        String risk = riskLevelService.decideRiskLevel(history);
+        return ResponseEntity.ok(risk);
     }
 }

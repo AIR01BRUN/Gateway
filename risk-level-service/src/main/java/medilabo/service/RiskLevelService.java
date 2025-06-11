@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import medilabo.model.DiabetesReport;
 import medilabo.model.History;
 import medilabo.model.Patient;
 
@@ -13,8 +12,8 @@ public class RiskLevelService {
 
     private final RestTemplate restTemplate;
 
-    @Value("${patient.url}")
-    private String patientUrl;
+    @Value("${gateway.url}")
+    private String gatewayUrl;
 
     private final String[] diabetesReportFields = {
             "Hémoglobine A1C",
@@ -49,8 +48,8 @@ public class RiskLevelService {
         return count;
     }
 
-    public History decideRiskLevel(History history) {
-        Patient patient = restTemplate.getForObject(patientUrl + "/patient/" + history.getIdPatient(),
+    public String decideRiskLevel(History history) {
+        Patient patient = restTemplate.getForObject(gatewayUrl + "/patient/" + history.getIdPatient(),
                 Patient.class);
 
         int age = calculateAge(patient.getBirthDate());
@@ -68,8 +67,7 @@ public class RiskLevelService {
             riskLevel = "Early Onset";
         }
 
-        history.setRiskLevel(riskLevel);
-        return history;
+        return riskLevel;
     }
 
     public int calculateAge(String dateOfBirth) {

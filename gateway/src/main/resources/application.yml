@@ -12,19 +12,27 @@ spring:
           uri: http://patient-service:8081
           predicates:
             - Path=/patient/**
-        - id: diabetes_report_service
-          uri: http://diabetes-reports-service:8082
-          predicates:
-            - Path=/diabetes-report/**
+          filters:
+            - AddRequestHeader=X-Gateway-Token, MY_SECRET_TOKEN
+
         - id: history_service
           uri: http://history-service:8083
           predicates:
             - Path=/history/**
+          filters:
+            - AddRequestHeader=X-Gateway-Token, MY_SECRET_TOKEN
+
         - id: risk_level_service
           uri: http://risk-level-service:8084
           predicates:
             - Path=/risk-level/**
+          filters:
+            - AddRequestHeader=X-Gateway-Token, MY_SECRET_TOKEN
+
         - id: front_service
           uri: http://front:8089
           predicates:
             - Path=/**
+          filters:
+            - AddRequestHeader=X-Gateway-Token, MY_SECRET_TOKEN
+          

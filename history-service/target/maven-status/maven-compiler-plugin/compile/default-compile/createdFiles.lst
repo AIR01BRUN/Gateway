@@ -1,5 +1,6 @@
-medilabo\controller\HistoryController.class
 medilabo\model\History.class
 medilabo\repository\HistoryRepository.class
+medilabo\controller\HistoryController.class
+medilabo\component\GatewayTokenFilter.class
 medilabo\HistoryApplication.class
 medilabo\service\HistoryService.class
